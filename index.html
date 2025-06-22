@@ -13,524 +13,159 @@
   <title>Image to text </title>
   
   
-  
-  
-<style>
-.draggable {
-  display: block;
-  height: auto;
-  position: fixed;
-  /*   width: 270px; */
-  cursor: move;
-  border: 1px solid red;
-  z-index:1;
-}
-
-#options {
-  background: lightgrey;
-  position: relative;
-  padding: 10px;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 2;
-}
-
-body {
-  background: darkgrey;
-  overflow: hidden;
-  width: "100%";
-  height: "100%";
-  margin:0;
-}
-
-:root {
-  --bottom:0px;
-  --right:0px;
-}
-
-#outputHolder {
-  border: 2px solid black;
-  position: fixed;
-  z-index: 2;
-  top: var(--top, unset);
-  bottom: var(--bottom, unset);
-  left: var(--left, unset);
-  right: var(--right, unset);
-  margin: 10px; /*   max-width: 50%;
-  max-height: 50%; */
-  max-height: calc(min(100%, 200px));
-  max-width: calc(min(100%, 500px));
-  width: calc(100% - 20px);
-  height: calc(100% - 20px);
-}
-#outputHolder textarea {
-  resize: none;
-  padding: 10px;
-  width: calc(100% - 24px);
-  height: calc(100% - 44px);
-}
-#outputHolder div {
-  display: flex;
-  height: 20px;
-  flex-wrap: nowrap;
-}
-#outputHolder div button {
-  flex-grow: 6;
-}
-
-#updown,#leftright {
-  flex-grow: 0 !important
+  <style>
+  body {
+    background: linear-gradient(90deg, #0084bf, #0c8996 50%);
 }
 </style>
-
-  <script>
-  window.console = window.console || function(t) {};
-</script>
-
-  
-  
-  <script>
-  if (document.location.search.match(/type=embed/gi)) {
-    window.parent.postMessage("resize", "*");
-  }
-</script>
-
 
 </head>
 
 <body translate="no">
-  <script src="tesseract.min.js"></script>
-
-
-  <div id="options">
-    <form action="" id="form" onsubmit="return false;">
-      <select id="language" name="language">
-      <option value="Afrikaans">Afrikaans (afr)</option><option value="Albanian">Albanian (sqi)</option><option value="Amharic">Amharic (amh)</option><option value="Arabic">Arabic (ara)</option><option value="Assamese">Assamese (asm)</option><option value="Azerbaijani - Cyrillic">Azerbaijani - Cyrillic (aze_cyrl)</option><option value="Azerbaijani">Azerbaijani (aze)</option><option value="Basque">Basque (eus)</option><option value="Belarusian">Belarusian (bel)</option><option value="Bengali">Bengali (ben)</option><option value="Bosnian">Bosnian (bos)</option><option value="Bulgarian">Bulgarian (bul)</option><option value="Burmese">Burmese (mya)</option><option value="Catalan; Valencian">Catalan; Valencian (cat)</option><option value="Cebuano">Cebuano (ceb)</option><option value="Central Khmer">Central Khmer (khm)</option><option value="Cherokee">Cherokee (chr)</option><option value="Chinese - Simplified">Chinese - Simplified (chi_sim)</option><option value="Chinese - Traditional">Chinese - Traditional (chi_tra)</option><option value="Croatian">Croatian (hrv)</option><option value="Czech">Czech (ces)</option><option value="Danish">Danish (dan)</option><option value="Dutch; Flemish">Dutch; Flemish (nld)</option><option value="Dzongkha">Dzongkha (dzo)</option><option value="English Middle (1100-1500)">English Middle (1100-1500) (enm)</option><option value="English">English (eng)</option><option value="Esperanto">Esperanto (epo)</option><option value="Estonian">Estonian (est)</option><option value="Finnish">Finnish (fin)</option><option value="French Middle (ca. 1400-1600)">French Middle (ca. 1400-1600) (frm)</option><option value="French">French (fra)</option><option value="Galician">Galician (glg)</option><option value="Georgian - Old">Georgian - Old (kat_old)</option><option value="Georgian">Georgian (kat)</option><option value="German Fraktur">German Fraktur (frk)</option><option value="German">German (deu)</option><option value="Greek Ancient (-1453)">Greek Ancient (-1453) (grc)</option><option value="Greek Modern (1453-)">Greek Modern (1453-) (ell)</option><option value="Gujarati">Gujarati (guj)</option><option value="Haitian; Haitian Creole">Haitian; Haitian Creole (hat)</option><option value="Hebrew">Hebrew (heb)</option><option value="Hindi">Hindi (hin)</option><option value="Hungarian">Hungarian (hun)</option><option value="Icelandic">Icelandic (isl)</option><option value="Indonesian">Indonesian (ind)</option><option value="Inuktitut">Inuktitut (iku)</option><option value="Irish">Irish (gle)</option><option value="Italian - Old">Italian - Old (ita_old)</option><option value="Italian">Italian (ita)</option><option value="Japanese">Japanese (jpn)</option><option value="Javanese">Javanese (jav)</option><option value="Kannada">Kannada (kan)</option><option value="Kazakh">Kazakh (kaz)</option><option value="Kirghiz; Kyrgyz">Kirghiz; Kyrgyz (kir)</option><option value="Korean">Korean (kor)</option><option value="Kurdish">Kurdish (kur)</option><option value="Lao">Lao (lao)</option><option value="Latin">Latin (lat)</option><option value="Latvian">Latvian (lav)</option><option value="Lithuanian">Lithuanian (lit)</option><option value="Macedonian">Macedonian (mkd)</option><option value="Malay">Malay (msa)</option><option value="Malayalam">Malayalam (mal)</option><option value="Maltese">Maltese (mlt)</option><option value="Marathi">Marathi (mar)</option><option value="Nepali">Nepali (nep)</option><option value="Norwegian">Norwegian (nor)</option><option value="Oriya">Oriya (ori)</option><option value="Panjabi; Punjabi">Panjabi; Punjabi (pan)</option><option value="Persian">Persian (fas)</option><option value="Polish">Polish (pol)</option><option value="Portuguese">Portuguese (por)</option><option value="Pushto; Pashto">Pushto; Pashto (pus)</option><option value="Romanian; Moldavian; Moldovan">Romanian; Moldavian; Moldovan (ron)</option><option value="Russian">Russian (rus)</option><option value="Sanskrit">Sanskrit (san)</option><option value="Serbian - Latin">Serbian - Latin (srp_latn)</option><option value="Serbian">Serbian (srp)</option><option value="Sinhala; Sinhalese">Sinhala; Sinhalese (sin)</option><option value="Slovak">Slovak (slk)</option><option value="Slovenian">Slovenian (slv)</option><option value="Spanish; Castilian - Old">Spanish; Castilian - Old (spa_old)</option><option value="Spanish; Castilian">Spanish; Castilian (spa)</option><option value="Swahili">Swahili (swa)</option><option value="Swedish">Swedish (swe)</option><option value="Syriac">Syriac (syr)</option><option value="Tagalog">Tagalog (tgl)</option><option value="Tajik">Tajik (tgk)</option><option value="Tamil">Tamil (tam)</option><option value="Telugu">Telugu (tel)</option><option value="Thai">Thai (tha)</option><option value="Tibetan">Tibetan (bod)</option><option value="Tigrinya">Tigrinya (tir)</option><option value="Turkish">Turkish (tur)</option><option value="Uighur; Uyghur">Uighur; Uyghur (uig)</option><option value="Ukrainian">Ukrainian (ukr)</option><option value="Urdu">Urdu (urd)</option><option value="Uzbek - Cyrillic">Uzbek - Cyrillic (uzb_cyrl)</option><option value="Uzbek">Uzbek (uzb)</option><option value="Vietnamese">Vietnamese (vie)</option><option value="Welsh">Welsh (cym)</option><option value="Yiddish">Yiddish (yid)</option></select>
-      <button id="resetImage">Reset Image</button>
-    </form>
-  </div>
-
-      <img id="pastedImage" style="display:none" class="draggable">
-<div id="outputHolder">
-    <div>
-      <button id="copyOutput">copy all</button>
-      <button id="cleanBlankLines">remove blank lines</button>
-      <button id="clearOutput">clear</button>
-      <button id="updown">↕</button>
-      <button id="leftright">↔</button>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+  
+    .container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      min-height: 100vh;
+    }
+  
+    .column {
+      flex: 1 1 50%;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+  
+    .drop-zone {
+      border: 2px dashed #aaa;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      background: #f9f9f9;
+    }
+  
+    #pastedImage {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin-top: 1rem;
+    }
+  
+    #Output {
+      width: 100%;
+      height: 400px;
+      padding: 10px;
+      margin-top: 1rem;
+      box-sizing: border-box;
+      font-family: monospace;
+    }
+  
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+    }
+  
+    button {
+      margin-right: 10px;
+    }
+  </style>
+  
+  <div class="container">
+    <!-- LEFT: Upload/Drop -->
+    <div class="column">
+      <h2>Upload or Drag Image</h2>
+      <div class="drop-zone" id="dropZone">
+        Drop image here or click to upload
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+      </div>
+      <img id="pastedImage" class="draggable" />
     </div>
-    <textarea id="Output" placeholder="Try Pasting an Image of Text Anywhere on this page!"></textarea>
+  
+    <!-- RIGHT: OCR Output -->
+    <div class="column">
+      <h2> Output</h2>
+      <div>
+        <button id="copyOutput">Copy</button>
+        <button id="cleanBlankLines">Clean</button>
+        <button id="clearOutput">Clear</button>
+      </div>
+      <textarea id="Output" placeholder="Text will appear here..."></textarea>
+    </div>
   </div>
-
-    <script >
-	window.HUB_EVENTS={ASSET_ADDED:"ASSET_ADDED",ASSET_DELETED:"ASSET_DELETED",ASSET_DESELECTED:"ASSET_DESELECTED",ASSET_SELECTED:"ASSET_SELECTED",ASSET_UPDATED:"ASSET_UPDATED",CONSOLE_CHANGE:"CONSOLE_CHANGE",CONSOLE_CLOSED:"CONSOLE_CLOSED",CONSOLE_EVENT:"CONSOLE_EVENT",CONSOLE_OPENED:"CONSOLE_OPENED",CONSOLE_RUN_COMMAND:"CONSOLE_RUN_COMMAND",CONSOLE_SERVER_CHANGE:"CONSOLE_SERVER_CHANGE",EMBED_ACTIVE_PEN_CHANGE:"EMBED_ACTIVE_PEN_CHANGE",EMBED_ACTIVE_THEME_CHANGE:"EMBED_ACTIVE_THEME_CHANGE",EMBED_ATTRIBUTE_CHANGE:"EMBED_ATTRIBUTE_CHANGE",EMBED_RESHOWN:"EMBED_RESHOWN",FORMAT_FINISH:"FORMAT_FINISH",FORMAT_ERROR:"FORMAT_ERROR",FORMAT_START:"FORMAT_START",IFRAME_PREVIEW_RELOAD_CSS:"IFRAME_PREVIEW_RELOAD_CSS",IFRAME_PREVIEW_URL_CHANGE:"IFRAME_PREVIEW_URL_CHANGE",KEY_PRESS:"KEY_PRESS",LINTER_FINISH:"LINTER_FINISH",LINTER_START:"LINTER_START",PEN_CHANGE_SERVER:"PEN_CHANGE_SERVER",PEN_CHANGE:"PEN_CHANGE",PEN_EDITOR_CLOSE:"PEN_EDITOR_CLOSE",PEN_EDITOR_CODE_FOLD:"PEN_EDITOR_CODE_FOLD",PEN_EDITOR_ERRORS:"PEN_EDITOR_ERRORS",PEN_EDITOR_EXPAND:"PEN_EDITOR_EXPAND",PEN_EDITOR_FOLD_ALL:"PEN_EDITOR_FOLD_ALL",PEN_EDITOR_LOADED:"PEN_EDITOR_LOADED",PEN_EDITOR_REFRESH_REQUEST:"PEN_EDITOR_REFRESH_REQUEST",PEN_EDITOR_RESET_SIZES:"PEN_EDITOR_RESET_SIZES",PEN_EDITOR_SIZES_CHANGE:"PEN_EDITOR_SIZES_CHANGE",PEN_EDITOR_UI_CHANGE_SERVER:"PEN_EDITOR_UI_CHANGE_SERVER",PEN_EDITOR_UI_CHANGE:"PEN_EDITOR_UI_CHANGE",PEN_EDITOR_UI_DISABLE:"PEN_EDITOR_UI_DISABLE",PEN_EDITOR_UI_ENABLE:"PEN_EDITOR_UI_ENABLE",PEN_EDITOR_UNFOLD_ALL:"PEN_EDITOR_UNFOLD_ALL",PEN_ERROR_INFINITE_LOOP:"PEN_ERROR_INFINITE_LOOP",PEN_ERROR_RUNTIME:"PEN_ERROR_RUNTIME",PEN_ERRORS:"PEN_ERRORS",PEN_LIVE_CHANGE:"PEN_LIVE_CHANGE",PEN_LOGS:"PEN_LOGS",PEN_MANIFEST_CHANGE:"PEN_MANIFEST_CHANGE",PEN_MANIFEST_FULL:"PEN_MANIFEST_FULL",PEN_PREVIEW_FINISH:"PEN_PREVIEW_FINISH",PEN_PREVIEW_START:"PEN_PREVIEW_START",PEN_SAVED:"PEN_SAVED",POPUP_CLOSE:"POPUP_CLOSE",POPUP_OPEN:"POPUP_OPEN",POST_CHANGE:"POST_CHANGE",POST_SAVED:"POST_SAVED",PROCESSING_FINISH:"PROCESSING_FINISH",PROCESSING_START:"PROCESSED_STARTED"},"object"!=typeof window.CP&&(window.CP={}),window.CP.PenTimer={programNoLongerBeingMonitored:!1,timeOfFirstCallToShouldStopLoop:0,_loopExits:{},_loopTimers:{},START_MONITORING_AFTER:2e3,STOP_ALL_MONITORING_TIMEOUT:5e3,MAX_TIME_IN_LOOP_WO_EXIT:2200,exitedLoop:function(E){this._loopExits[E]=!0},shouldStopLoop:function(E){if(this.programKilledSoStopMonitoring)return!0;if(this.programNoLongerBeingMonitored)return!1;if(this._loopExits[E])return!1;var _=this._getTime();if(0===this.timeOfFirstCallToShouldStopLoop)return this.timeOfFirstCallToShouldStopLoop=_,!1;var o=_-this.timeOfFirstCallToShouldStopLoop;if(o<this.START_MONITORING_AFTER)return!1;if(o>this.STOP_ALL_MONITORING_TIMEOUT)return this.programNoLongerBeingMonitored=!0,!1;try{this._checkOnInfiniteLoop(E,_)}catch{return this._sendErrorMessageToEditor(),this.programKilledSoStopMonitoring=!0,!0}return!1},_sendErrorMessageToEditor:function(){try{if(this._shouldPostMessage()){var E={topic:HUB_EVENTS.PEN_ERROR_INFINITE_LOOP,data:{line:this._findAroundLineNumber()}};parent.postMessage(E,"*")}else this._throwAnErrorToStopPen()}catch{this._throwAnErrorToStopPen()}},_shouldPostMessage:function(){return document.location.href.match(/boomboom/)},_throwAnErrorToStopPen:function(){throw"We found an infinite loop in your Pen. We've stopped the Pen from running. More details and workarounds at https://blog.codepen.io/2016/06/08/can-adjust-infinite-loop-protection-timing/"},_findAroundLineNumber:function(){var E=new Error("ignored"),_=0;if(E.stack){var o=E.stack.match(/boomboom\S+:(\d+):\d+/);o&&(_=o[1])}return _},_checkOnInfiniteLoop:function(E,_){if(!this._loopTimers[E])return this._loopTimers[E]=_,!1;if(_-this._loopTimers[E]>this.MAX_TIME_IN_LOOP_WO_EXIT)throw"Infinite Loop found on loop: "+E},_getTime:function(){return Date.now()}},window.CP.shouldStopExecution=function(E){var _=window.CP.PenTimer.shouldStopLoop(E);return!0===_&&console.warn("[CodePen]: An infinite loop (or a loop taking too long) was detected, so we stopped its execution. More details at https://blog.codepen.io/2016/06/08/can-adjust-infinite-loop-protection-timing/"),_},window.CP.exitedLoop=function(E){window.CP.PenTimer.exitedLoop(E)};
-	</script>
-
   
-      <script id="rendered-js">
-// * https://stackoverflow.com/a/15369753 http://jsfiddle.net/bt7BU/225/ Clipboard onPaste */
-/* Tesseract.js https://github.com/naptha/tesseract.js#tesseractjs */
+  <script src="tesseract.min.js"></script>
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const dropZone = document.getElementById('dropZone');
+  const imagePreview = document.getElementById('pastedImage');
+  const outputArea = document.getElementById('Output');
+  const lang = 'eng'; // default to English
 
-var languagesList = {
-  Afrikaans: "afr",
-  Albanian: "sqi",
-  Amharic: "amh",
-  Arabic: "ara",
-  Assamese: "asm",
-  "Azerbaijani - Cyrillic": "aze_cyrl",
-  Azerbaijani: "aze",
-  Basque: "eus",
-  Belarusian: "bel",
-  Bengali: "ben",
-  Bosnian: "bos",
-  Bulgarian: "bul",
-  Burmese: "mya",
-  "Catalan; Valencian": "cat",
-  Cebuano: "ceb",
-  "Central Khmer": "khm",
-  Cherokee: "chr",
-  "Chinese - Simplified": "chi_sim",
-  "Chinese - Traditional": "chi_tra",
-  Croatian: "hrv",
-  Czech: "ces",
-  Danish: "dan",
-  "Dutch; Flemish": "nld",
-  Dzongkha: "dzo",
-  "English Middle (1100-1500)": "enm",
-  English: "eng",
-  Esperanto: "epo",
-  Estonian: "est",
-  Finnish: "fin",
-  "French Middle (ca. 1400-1600)": "frm",
-  French: "fra",
-  Galician: "glg",
-  "Georgian - Old": "kat_old",
-  Georgian: "kat",
-  "German Fraktur": "frk",
-  German: "deu",
-  "Greek Ancient (-1453)": "grc",
-  "Greek Modern (1453-)": "ell",
-  Gujarati: "guj",
-  "Haitian; Haitian Creole": "hat",
-  Hebrew: "heb",
-  Hindi: "hin",
-  Hungarian: "hun",
-  Icelandic: "isl",
-  Indonesian: "ind",
-  Inuktitut: "iku",
-  Irish: "gle",
-  "Italian - Old": "ita_old",
-  Italian: "ita",
-  Japanese: "jpn",
-  Javanese: "jav",
-  Kannada: "kan",
-  Kazakh: "kaz",
-  "Kirghiz; Kyrgyz": "kir",
-  Korean: "kor",
-  Kurdish: "kur",
-  Lao: "lao",
-  Latin: "lat",
-  Latvian: "lav",
-  Lithuanian: "lit",
-  Macedonian: "mkd",
-  Malay: "msa",
-  Malayalam: "mal",
-  Maltese: "mlt",
-  Marathi: "mar",
-  Nepali: "nep",
-  Norwegian: "nor",
-  Oriya: "ori",
-  "Panjabi; Punjabi": "pan",
-  Persian: "fas",
-  Polish: "pol",
-  Portuguese: "por",
-  "Pushto; Pashto": "pus",
-  "Romanian; Moldavian; Moldovan": "ron",
-  Russian: "rus",
-  Sanskrit: "san",
-  "Serbian - Latin": "srp_latn",
-  Serbian: "srp",
-  "Sinhala; Sinhalese": "sin",
-  Slovak: "slk",
-  Slovenian: "slv",
-  "Spanish; Castilian - Old": "spa_old",
-  "Spanish; Castilian": "spa",
-  Swahili: "swa",
-  Swedish: "swe",
-  Syriac: "syr",
-  Tagalog: "tgl",
-  Tajik: "tgk",
-  Tamil: "tam",
-  Telugu: "tel",
-  Thai: "tha",
-  Tibetan: "bod",
-  Tigrinya: "tir",
-  Turkish: "tur",
-  "Uighur; Uyghur": "uig",
-  Ukrainian: "ukr",
-  Urdu: "urd",
-  "Uzbek - Cyrillic": "uzb_cyrl",
-  Uzbek: "uzb",
-  Vietnamese: "vie",
-  Welsh: "cym",
-  Yiddish: "yid" };
+  dropZone.addEventListener('click', () => fileInput.click());
 
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+      handleImage(e.target.files[0]);
+    }
+  });
 
-var lang = "eng";
-var blob;
-var currZoom;
-var draggingElement;
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.background = '#e0f7fa';
+  });
 
-function PopulateSelects() {
-  var languageSelect = document.getElementById("language");
-  for (var name in languagesList) {
-    languageSelect.innerHTML +=
-    "<option value='" +
-    name +
-    "'>" +
-    name +
-    " (" +
-    languagesList[name] +
-    ")" +
-    "</option>";
+  dropZone.addEventListener('dragleave', (e) => {
+    dropZone.style.background = '#f9f9f9';
+  });
+
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.style.background = '#f9f9f9';
+    if (e.dataTransfer.files.length > 0) {
+      handleImage(e.dataTransfer.files[0]);
+    }
+  });
+
+  function handleImage(file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      imagePreview.src = e.target.result;
+      runOCR(file);
+    };
+    reader.readAsDataURL(file);
   }
-  language.value = "English";
-  lang = "eng";
-}
-function setLanguage() {
-  var languageSelect = document.getElementById("language");
-  lang = languagesList[languageSelect.value];
-  console.log(lang);
-}
 
-function resetImage() {
-  pastedImage = document.getElementById("pastedImage");
-  if (pastedImage) {
-    currZoom = pastedImage.naturalWidth;
-    pastedImage.style.width = currZoom + "px";
-    pastedImage.style.removeProperty("width");
-    pastedImage.style.removeProperty("left");
-    pastedImage.style.removeProperty("top");
-  }
-}
-
-function tesseract(blob) {
-  var reader = new FileReader();
-  reader.onload = function (event) {
-    document.getElementById("Output").value = "Working....";
-    console.log(event.target.result); // clipboard image data url!
-    Tesseract.recognize(blob, lang, {
+  function runOCR(imageFile) {
+    outputArea.value = 'Processing...';
+    Tesseract.recognize(imageFile, lang, {
       logger: m => {
-        /* if ( m.progress != 1 )*/ // eng=english, fra=french
-        document.getElementById("Output").value =
-        m.status + " " + (m.progress * 100).toFixed(0) + "%";
-        console.log(m);
-      } }).
-    then(({ data: { text } }) => {
-      document.getElementById("Output").value = text;
+        outputArea.value = `${m.status} ${Math.round(m.progress * 100)}%`;
+      }
+    }).then(({ data: { text } }) => {
+      outputArea.value = text;
     });
-    //console.log(event.target.result)
-
-    pastedImage = document.getElementById("pastedImage");
-    pastedImage.style.removeProperty("display");
-    pastedImage.style.removeProperty("width");
-    pastedImage.style.removeProperty("left");
-    pastedImage.style.removeProperty("top");
-
-    document.getElementById("pastedImage").src = event.target.result;
-  };
-  reader.readAsDataURL(blob);
-}
-document.body.onpaste = function (event) {
-  // use event.originalEvent.clipboard for newer chrome versions
-  var items = (event.clipboardData || event.originalEvent.clipboardData).items;
-  console.log(JSON.stringify(items)); // will give you the mime types
-  // find pasted image among pasted items
-  var blob = null;
-  for (var i = 0; i < items.length; i++) {if (window.CP.shouldStopExecution(0)) break;
-    if (items[i].type.indexOf("image") === 0) {
-      blob = items[i].getAsFile();
-    }
-  }
-  // load image if there is a pasted image
-  window.CP.exitedLoop(0);if (blob !== null) {
-    tesseract(blob);
-  }
-};
-
-document.body.addEventListener("drop", function (e) {
-  e.stopPropagation();
-  e.preventDefault();
-  var items = e.dataTransfer.items; // Array of all files
-  var blob = null;
-  for (var i = 0; i < items.length; i++) {if (window.CP.shouldStopExecution(1)) break;
-    if (items[i].type.indexOf("image") === 0) {
-      blob = items[i].getAsFile();
-    }
-  }window.CP.exitedLoop(1);
-  if (blob !== null) {
-    tesseract(blob);
-  }
-});
-
-function resizeWindow() {
-  outputHolder = document.getElementById("outputHolder");
-  // if (window.innerHeight >= 400)
-  //   outputHolder.style.maxHeight = "calc(min(100%,400px))"
-  // else
-  // if (window.innerHeight >= window.innerWidth) {
-  //   outputHolder.style.maxWidth = "100%";
-  //   outputHolder.style.maxHeight = "50%";
-  // } else {
-  //   outputHolder.style.maxWidth = "50%";
-  //   outputHolder.style.maxHeight = "50%";
-  // }
-}
-
-function copyOutput() {
-  output = document.getElementById("Output");
-  output.select();
-  output.setSelectionRange(0, 99999); /* For mobile devices */
-
-  /* Copy the text inside the text field */
-  document.execCommand("copy");
-}
-function cleanBlankLines() {
-  output = document.getElementById("Output");
-  output.value = output.value.replaceAll(/(\n)+/g, "\n");
-}
-function clearOutput() {
-  document.getElementById("Output").value = "";
-}
-
-var coordX;
-var coordY;
-
-function startDrag(e) {
-  // determine event object
-  if (!e) {
-    var e = window.event;
   }
 
-  // IE uses srcElement, others use target
-  var targ = e.target ? e.target : e.srcElement;
-  if (targ.className != "draggable") {
-    return;
-  }
-  draggingElement = targ;
+  document.getElementById("copyOutput").addEventListener("click", () => {
+    outputArea.select();
+    document.execCommand("copy");
+  });
 
-  // calculate event X, Y coordinates
-  offsetX = e.clientX;
-  offsetY = e.clientY;
+  document.getElementById("cleanBlankLines").addEventListener("click", () => {
+    outputArea.value = outputArea.value.replace(/^\s*$(?:\r\n?|\n)/gm, '');
+  });
 
-  // assign default values for top and left properties
-  if (!targ.style.left) {
-    targ.style.left = targ.offsetLeft;
-  }
-  if (!targ.style.top) {
-    targ.style.top = targ.offsetTop;
-  }
-
-  // calculate integer values for top and left
-  // properties
-  coordX = parseInt(targ.offsetLeft);
-  coordY = parseInt(targ.offsetTop);
-  drag = true;
-
-  // move div element
-  document.onmousemove = dragDiv;
-
-  return false;
-}
-
-function dragDiv(e) {
-  if (!drag) {
-    return;
-  }
-  if (!e) {
-    var e = window.event;
-  }
-  var targ = e.target ? e.target : e.srcElement;
-  targ = draggingElement;
-  // move div element
-  // if(coordX + e.clientX - offsetX > 0)
-  targ.style.left = coordX + e.clientX - offsetX + "px";
-  // if(coordY + e.clientY - offsetY > 0)
-  targ.style.top = coordY + e.clientY - offsetY + "px";
-  return false;
-}
-
-function zoomImage(event) {
-  if (!e) {
-    var e = window.event;
-  }
-
-  var targ = e.target ? e.target : e.srcElement;
-  if (!draggingElement) {
-    if (targ.className != "draggable") {
-      return;
-    }
-    draggingElement = targ;
-  }
-  if (!targ || targ.className != "draggable") return;
-  // targ = draggingElement;
-
-
-  // move div element
-  if (!currZoom) {
-    currZoom = targ.naturalWidth;
-  }
-  currZoom = currZoom - event.deltaY;
-  // if (currZoom > 1500)
-  //     currZoom = 1500;
-  if (currZoom < 100) {
-    currZoom = currZoom + event.deltaY;
-    return;
-  }
-
-  if (!targ.style.left) {
-    targ.style.left = targ.offsetLeft;
-  }
-  if (!targ.style.top) {
-    targ.style.top = targ.offsetTop;
-  }
-
-  console.log((e.clientX - targ.offsetLeft) / targ.width);
-  console.log(parseInt(targ.style.top) + "//" + targ.scrollHeight);
-
-
-  targ.style.width = currZoom + "px";
-  targ.style.top = targ.offsetTop + targ.height / targ.width * ((e.clientY - targ.offsetTop) / targ.height) * event.deltaY + "px";
-  targ.style.left = targ.offsetLeft + (e.clientX - targ.offsetLeft) / targ.width * event.deltaY + "px";
-}
-
-function stopDrag() {
-  drag = false;
-}
-
-var alignedTop = false;
-function swapVertPosition() {
-  if (alignedTop) {
-    document.documentElement.style.removeProperty('--top');
-    document.documentElement.style.setProperty('--bottom', '0px');
-    alignedTop = false;
-  } else {
-    document.documentElement.style.setProperty('--top', '41px');
-    document.documentElement.style.removeProperty('--bottom');
-    alignedTop = true;
-  }
-}
-
-var alignedLeft = false;
-function swapHorPosition() {
-  if (alignedLeft) {
-    document.documentElement.style.removeProperty('--left');
-    document.documentElement.style.setProperty('--right', '0px');
-    alignedLeft = false;
-  } else {
-    document.documentElement.style.setProperty('--left', '0px');
-    document.documentElement.style.removeProperty('--right');
-    alignedLeft = true;
-  }
-}
-
-window.onload = function () {
-  resizeWindow();
-  document.body.addEventListener("resize", resizeWindow, false);
-  PopulateSelects();
-  document.getElementById("language").
-  addEventListener("change", setLanguage, false);
-
-  document.onmousedown = startDrag;
-  document.onmouseup = stopDrag;
-  document.onwheel = zoomImage;
-
-  document.
-  getElementById("resetImage").
-  addEventListener("click", resetImage, false);
-
-  document.
-  getElementById("copyOutput").
-  addEventListener("click", copyOutput, false);
-  document.
-  getElementById("cleanBlankLines").
-  addEventListener("click", cleanBlankLines, false);
-  document.
-  getElementById("clearOutput").
-  addEventListener("click", clearOutput, false);
-
-  document.
-  getElementById("updown").
-  addEventListener("click", swapVertPosition, false);
-  document.
-  getElementById("leftright").
-  addEventListener("click", swapHorPosition, false);
-};
-//# sourceURL=pen.js
-    </script>
-
-  
+  document.getElementById("clearOutput").addEventListener("click", () => {
+    outputArea.value = '';
+  });
+</script>
 
 
 
